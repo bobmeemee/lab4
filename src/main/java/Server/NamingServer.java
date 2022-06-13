@@ -22,7 +22,7 @@ public class NamingServer extends Thread{
     }
 
     @PostMapping("/NamingServer/Nodes/{node}")
-    public String addNode(@PathVariable(value = "node") String name, @RequestBody String IP) throws IOException {
+    public String addNodeREST(@PathVariable(value = "node") String name, @RequestBody String IP) throws IOException {
         int nodeID = HashFunction.hash(name);
         if (nodeMap.putIfAbsent(nodeID, IP) == null) {
             nodeMap.exportMap();
@@ -34,7 +34,7 @@ public class NamingServer extends Thread{
 
 
     @DeleteMapping("/NamingServer/Nodes/{node}")
-    public String removeNode(@PathVariable(value = "node") String name) throws IOException {
+    public String removeNodeREST(@PathVariable(value = "node") String name) throws IOException {
         int nodeID = HashFunction.hash(name);
         if(nodeMap.remove(nodeID) == null) {
             return "[NS REST] Node " + name + " does not exist\n" ;
@@ -76,6 +76,25 @@ public class NamingServer extends Thread{
         return send;
     }
 
+    public String addNode(String name, String IP) throws IOException {
+        int nodeID = HashFunction.hash(name);
+        if (nodeMap.putIfAbsent(nodeID, IP) == null) {
+            nodeMap.exportMap();
+            return "Added node" + "node to database\n";
+        } else {
+            return "Name " + name + " not available\n";
+        }
+    }
+
+    public String deleteNode(String name) throws IOException {
+        int nodeID = HashFunction.hash(name);
+        if(nodeMap.remove(nodeID) == null) {
+            return "Node" + name + " does not exist\n";
+        } else {
+            nodeMap.exportMap();
+            return "Node " + name + "is deleted\n";
+        }
+    }
 
 
     public void run(){

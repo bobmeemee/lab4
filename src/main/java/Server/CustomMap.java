@@ -11,7 +11,7 @@ public class CustomMap extends ConcurrentSkipListMap<Integer, String> {
         out.writeObject(this);
         out.close();
         fo.close();
-        System.out.println("Current Database save to ./src/main/map.txt");
+        System.out.println("Current database saved to ./src/main/map.txt");
     }
 
     public void importMap() throws IOException, ClassNotFoundException {
