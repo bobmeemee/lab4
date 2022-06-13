@@ -5,6 +5,7 @@ import Utils.HashFunction;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -15,10 +16,18 @@ import java.util.Set;
 public class NamingServer extends Thread{
     private final CustomMap nodeMap;
     private final HashMap<Integer, Integer> fileMap;
+    private NamingServerUDPInterface udpInterface;
 
-    public NamingServer() {
+    public NamingServer()  {
         nodeMap = new CustomMap();
         fileMap = new HashMap<Integer, Integer>();
+        try {
+            this.udpInterface = new NamingServerUDPInterface(this);
+            new Thread(this.udpInterface).start();
+        } catch (UnknownHostException e) {
+            System.err.println("Failed to start NSUDPinterface " + e);
+        }
+
     }
 
     @PostMapping("/NamingServer/Nodes/{node}")

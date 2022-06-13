@@ -24,8 +24,13 @@ public class Node {
         nextID = -1;
         previousID = -1;
 
-        this.udpInterface = new UDPInterface(this);
-        this.udpInterface.run();
+        try {
+            this.udpInterface = new UDPInterface(this);
+            new Thread(this.udpInterface).start();
+        } catch (Exception e) {
+            System.err.println("[NS] " + e);
+        }
+
 
         this.discovery();
 
@@ -33,6 +38,10 @@ public class Node {
 
     public int getPort() {
         return port;
+    }
+
+    public int getNodeID() {
+        return nodeID;
     }
 
     public int getNextID() {return nextID;}
