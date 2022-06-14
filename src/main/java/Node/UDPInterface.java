@@ -10,10 +10,11 @@ public class UDPInterface implements Runnable {
     private final Node node;
     private final InetAddress multicastAddress = InetAddress.getByName("255.255.255.255");
     private final DatagramSocket socket;
+    private final int port = 8001;
 
     public UDPInterface(Node node) throws UnknownHostException, SocketException {
         this.node = node;
-        this.socket = new DatagramSocket(node.getPort());
+        this.socket = new DatagramSocket(this.port);
     }
 
     public void sendMulticast(Message m) throws IOException {
@@ -21,10 +22,22 @@ public class UDPInterface implements Runnable {
 
         byte[] buf = json.getBytes();
 
-        DatagramPacket packet = new DatagramPacket(buf, buf.length, this.multicastAddress, this.node.getPort());
-        this.socket.send(packet);
+        DatagramPacket packet1 = new DatagramPacket(buf, buf.length, this.multicastAddress, this.port);
+        DatagramPacket packet2 = new DatagramPacket(buf, buf.length, this.multicastAddress, this.port - 1);
+
+        this.socket.send(packet1);
+        this.socket.send(packet2);
         System.out.println("[NODE UDP]: Multicast sent type " + m.getType() );
 
+    }
+
+    public void sendUnicast(Message m, InetAddress destinationAddress, int destinationPort) throws IOException {
+        String json = new Gson().toJson(m);
+        byte[] buf = json.getBytes();
+        DatagramPacket packet = new DatagramPacket(buf, buf.length, destinationAddress, destinationPort);
+        this.socket.send(packet);
+        System.out.println("[NODE UDP]: Unicast sent to " + destinationAddress.toString() +":" + destinationPort
+                + " type " + m.getType() );
     }
 
 
@@ -34,7 +47,7 @@ public class UDPInterface implements Runnable {
             while(true) {
                 byte[] buf = new byte[1024];
                 DatagramPacket packet = new DatagramPacket(buf, buf.length);
-                System.out.println("[NODE UDP]: waiting for messages on port " +  node.getPort());
+                System.out.println("[NODE UDP]: waiting for messages on port " +  this.port);
                 this.socket.receive(packet);
                 Thread rq = new Thread( new RequestHandler(node, multicastAddress,packet));
                 rq.start();

@@ -16,8 +16,6 @@ public class Node {
     private int previousID;
     private UDPInterface udpInterface;
 
-    private final int port = 8001;
-
     public Node(String name) throws IOException {
         this.name = name;
         this.nodeID = HashFunction.hash(name);
@@ -36,12 +34,12 @@ public class Node {
 
     }
 
-    public int getPort() {
-        return port;
-    }
-
     public int getNodeID() {
         return nodeID;
+    }
+
+    public UDPInterface getUdpInterface() {
+        return udpInterface;
     }
 
     public int getNextID() {return nextID;}

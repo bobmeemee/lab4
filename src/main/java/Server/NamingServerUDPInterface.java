@@ -21,7 +21,7 @@ public class NamingServerUDPInterface implements Runnable{
     public void sendMulticast(Message m) throws IOException {
         String json = new Gson().toJson(m);
         byte[] buf = json.getBytes();
-        DatagramPacket packet = new DatagramPacket(buf, buf.length, this.multicastAddress, this.port+1);
+        DatagramPacket packet = new DatagramPacket(buf, buf.length, this.multicastAddress, this.port + 1);
         this.socket.send(packet);
         System.out.println("[NS UDP]: Multicast sent type " + m.getType() );
 
@@ -41,10 +41,9 @@ public class NamingServerUDPInterface implements Runnable{
     public void run() {
         try {
             while (true) {
-                DatagramSocket socket = new DatagramSocket(this.port);
                 byte[] buf = new byte[1024];
                 DatagramPacket packet = new DatagramPacket(buf, buf.length);
-                socket.receive(packet);
+                this.socket.receive(packet);
                 if(packet.getLength() == 0) {
                     System.out.println("[NS UDP]: message is empty");
                 } else {

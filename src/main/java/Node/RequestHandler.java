@@ -1,10 +1,10 @@
 package Node;
 
-import Messages.LeavingNetworkMessage;
-import Messages.Message;
+import Messages.*;
 import Utils.HashFunction;
 import com.google.gson.Gson;
 
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 
@@ -26,8 +26,6 @@ public class RequestHandler extends Thread {
         Message message = gson.fromJson(json, Message.class);
         int senderID = message.getSender();
 
-        System.out.println(this.node.getNodeID());
-        System.out.println(senderID);
         if(senderID == this.node.getNodeID()) {
             return;
         } else {
@@ -35,18 +33,32 @@ public class RequestHandler extends Thread {
                     + senderIP + ":" + receivedMessage.getPort());
         }
 
+        Message response = new Message(senderID);
+        boolean sendUnicastResponse = false;
+        System.out.println("[NODE]: current next " + this.node.getNextID());
+        System.out.println("[NODE]: current previous " + this.node.getPreviousID());
+
+
         switch (message.getType()) {
             case "DiscoveryMessage":
                 // node was the only one in network
-                if(this.node.getNodeID() == this.node.getNextID()) {
+                if(this.node.getNodeID() == this.node.getNextID() && this.node.getNextID() != -1) {
                     this.node.setNextID(senderID);
                     this.node.setPreviousID(senderID);
-
+                    response = new InsertAsPreviousAndNextMessage(this.node.getNodeID());
+                    sendUnicastResponse = true;
+                    // sender is new next
                 } else if(senderID < this.node.getNextID() && senderID > this.node.getNodeID() ) {
                     this.node.setNextID(senderID);
-                    // node is new prev
+                    response = new InsertAsPreviousMessage(this.node.getNodeID());
+                    sendUnicastResponse = true;
+
+                    // sender is new prev
                 } else if(senderID > this.node.getPreviousID() && senderID < this.node.getNodeID() ) {
                     this.node.setPreviousID(senderID);
+                    response = new InsertAsNextMessage(this.node.getNodeID());
+                    sendUnicastResponse = true;
+
                 }
                 break;
             case "LeavingNetworkMessage":
@@ -65,13 +77,32 @@ public class RequestHandler extends Thread {
                     System.out.println("[NODE]: nextNodeID: " + this.node.getNextID());
                     System.out.println("[NODE]: previousNodeID: " + this.node.getPreviousID());
                 }
-
-
-
                 break;
+
+            case "InsertAsNextMessage":
+                this.node.setNextID(senderID);
+                System.out.println("[NODE UDP]: New next node ID: " + this.node.getNextID());
+                break;
+            case "InsertAsPreviousMessage" :
+                this.node.setPreviousID(senderID);
+                System.out.println("[NODE UDP]: New previous node ID: " + this.node.getPreviousID());
+                break;
+
+            case "InsertAsPreviousAndNextMessage":
+                this.node.setPreviousID(senderID);
+                this.node.setNextID(senderID);
+                System.out.println("[NODE UDP]: New previous and next node ID: " + this.node.getPreviousID());
 
             default:
                 break;
+        }
+
+        if(sendUnicastResponse) {
+            try {
+                this.node.getUdpInterface().sendUnicast(response, senderIP, receivedMessage.getPort());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
     }
