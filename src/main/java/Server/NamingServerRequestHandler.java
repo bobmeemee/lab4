@@ -2,6 +2,7 @@ package Server;
 
 
 import Messages.Message;
+import Messages.NodeCountMessage;
 import Utils.HashFunction;
 import com.google.gson.Gson;
 
@@ -37,11 +38,14 @@ public class NamingServerRequestHandler extends Thread {
         }
 
         Message response = new Message(server.getServerID());
+        boolean responseIsMulticast = true;
         switch(message.getType()) {
             case "DiscoveryMessage":
                 try {
                     String s = server.addNode(senderID, senderIP.toString());
                     System.out.println("[NS UDP]: " + s);
+                    response = new NodeCountMessage(server.getServerID(), server.getNodeCount() - 1);
+                    responseIsMulticast = false;
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -54,11 +58,22 @@ public class NamingServerRequestHandler extends Thread {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
             default:
                 break;
-
         }
 
+        if(responseIsMulticast) {
+            try {
+                this.server.getUdpInterface().sendMulticast(response);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            try {
+                this.server.getUdpInterface().sendUnicast(response,senderIP, receivedMessage.getPort());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

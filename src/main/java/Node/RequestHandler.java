@@ -61,7 +61,13 @@ public class RequestHandler extends Thread {
                 if(message.getContent() == 0) {
                     this.node.setNextID(this.node.getNodeID());
                     this.node.setPreviousID(this.node.getNodeID());
+                    System.out.println("[NODE]: Only node in network");
+                    System.out.println("[NODE]: nextNodeID: " + this.node.getNextID());
+                    System.out.println("[NODE]: previousNodeID: " + this.node.getPreviousID());
                 }
+
+
+
                 break;
 
             default:

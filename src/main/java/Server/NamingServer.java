@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,7 +26,7 @@ public class NamingServer extends Thread{
         try {
             this.udpInterface = new NamingServerUDPInterface(this);
             new Thread(this.udpInterface).start();
-        } catch (UnknownHostException e) {
+        } catch (UnknownHostException | SocketException e) {
             System.err.println("Failed to start NSUDPinterface " + e);
         }
 
@@ -106,6 +107,14 @@ public class NamingServer extends Thread{
 
     public int getServerID() {
         return 0;
+    }
+
+    public int getNodeCount() {
+        return nodeMap.size();
+    }
+
+    public NamingServerUDPInterface getUdpInterface() {
+        return udpInterface;
     }
 
     public static void main(String[] args) {
