@@ -15,17 +15,19 @@ public class NamingServerUDPInterface implements Runnable{
     @Override
     public void run() {
         try {
-            DatagramSocket socket = new DatagramSocket(8000);
-            byte[] buf = new byte[1024];
-            DatagramPacket packet = new DatagramPacket(buf, buf.length);
-            socket.receive(packet);
-            System.out.println("[NS UDP]: received a message");
-            if(packet.getLength() == 0) {
-                System.out.println("[NS UDP]: message is empty");
-            } else {
-                Thread rq = new Thread(new NamingServerRequestHandler(server, multicastAddress, packet));
-                rq.start();
+            while (true) {
+                DatagramSocket socket = new DatagramSocket(8000);
+                byte[] buf = new byte[1024];
+                DatagramPacket packet = new DatagramPacket(buf, buf.length);
+                socket.receive(packet);
+                if(packet.getLength() == 0) {
+                    System.out.println("[NS UDP]: message is empty");
+                } else {
+                    Thread rq = new Thread(new NamingServerRequestHandler(server, multicastAddress, packet));
+                    rq.start();
+                }
             }
+
         } catch (IOException e) {
             e.printStackTrace();
         }

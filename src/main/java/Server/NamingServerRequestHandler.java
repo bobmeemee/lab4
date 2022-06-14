@@ -22,18 +22,25 @@ public class NamingServerRequestHandler extends Thread {
     }
 
     public void run() {
-        InetAddress senderIP = receivedMessage.getAddress();
         String json = new String(this.receivedMessage.getData(), 0, this.receivedMessage.getLength());
         Gson gson = new Gson();
         Message message = gson.fromJson(json, Message.class);
 
-        String senderName = message.getSender();
+        InetAddress senderIP = receivedMessage.getAddress();
+        int senderID = message.getSender();
 
+        if(senderID == this.server.getServerID()) {
+            return;
+        } else {
+            System.out.println("[NS UDP]: received a " + message.getType() + " from " + senderID + " with address "
+                    + senderIP + ":" + receivedMessage.getPort());
+        }
 
+        Message response = new Message(server.getServerID());
         switch(message.getType()) {
             case "DiscoveryMessage":
                 try {
-                    String s = server.addNode(senderName, senderIP.toString());
+                    String s = server.addNode(senderID, senderIP.toString());
                     System.out.println("[NS UDP]: " + s);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -42,7 +49,7 @@ public class NamingServerRequestHandler extends Thread {
 
             case "LeavingNetworkMessage":
                 try {
-                    String s = server.deleteNode(senderName);
+                    String s = server.deleteNode(senderID);
                     System.out.println("[NS UDP]: " + s);
                 } catch (IOException e) {
                     e.printStackTrace();

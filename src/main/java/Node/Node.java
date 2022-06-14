@@ -50,7 +50,7 @@ public class Node {
     public void setPreviousID(int previousID) {this.previousID = previousID;}
 
     public void discovery() throws IOException {
-        Message m = new DiscoveryMessage(this.name);
+        Message m = new DiscoveryMessage(this.nodeID);
         udpInterface.sendMulticast(m);
     }
 

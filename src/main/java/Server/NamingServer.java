@@ -2,6 +2,7 @@ package Server;
 
 import Utils.HashFunction;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -85,29 +86,35 @@ public class NamingServer extends Thread{
         return send;
     }
 
-    public String addNode(String name, String IP) throws IOException {
-        int nodeID = HashFunction.hash(name);
+    public String addNode(int nodeID, String IP) throws IOException {
         if (nodeMap.putIfAbsent(nodeID, IP) == null) {
             nodeMap.exportMap();
-            return "Added node" + "node to database\n";
+            return "Added node with hash " + nodeID + " and IP" + IP + " to database\n";
         } else {
-            return "Name " + name + " not available\n";
+            return "Name with hash " + nodeID + " not available\n";
         }
     }
 
-    public String deleteNode(String name) throws IOException {
-        int nodeID = HashFunction.hash(name);
+    public String deleteNode(int nodeID) throws IOException {
         if(nodeMap.remove(nodeID) == null) {
-            return "Node" + name + " does not exist\n";
+            return "Node with hash " + nodeID + " does not exist\n";
         } else {
             nodeMap.exportMap();
-            return "Node " + name + "is deleted\n";
+            return "Node with hash " + nodeID + " is deleted\n";
         }
     }
 
+    public int getServerID() {
+        return 0;
+    }
 
+    public static void main(String[] args) {
+        System.out.println("[NAMINGSERVER]: Starting...");
+        NamingServer namingServer = new NamingServer();
+
+    }
     public void run(){
-        System.out.println("Starting NameServer...");
-        NamingServer nameServer = new NamingServer();
+        System.out.println("[NAMINGSERVER]: Starting...");
+        NamingServer namingServer = new NamingServer();
     }
 }

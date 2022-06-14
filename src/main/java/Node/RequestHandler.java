@@ -24,12 +24,15 @@ public class RequestHandler extends Thread {
         String json = new String(this.receivedMessage.getData(), 0, this.receivedMessage.getLength());
         Gson gson = new Gson();
         Message message = gson.fromJson(json, Message.class);
+        int senderID = message.getSender();
 
-        String senderName = message.getSender();
-        int senderID = HashFunction.hash(senderName);
-
+        System.out.println(this.node.getNodeID());
+        System.out.println(senderID);
         if(senderID == this.node.getNodeID()) {
             return;
+        } else {
+            System.out.println("[NODE UDP]: received a " + message.getType() + " from " + senderID + " with address "
+                    + senderIP + ":" + receivedMessage.getPort());
         }
 
         switch (message.getType()) {

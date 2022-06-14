@@ -23,7 +23,7 @@ public class UDPInterface implements Runnable {
 
         DatagramPacket packet = new DatagramPacket(buf, buf.length, this.multicastAddress, this.node.getPort());
         this.socket.send(packet);
-        System.out.println("[NS UDP]: Multicast sent type " + m.getType() );
+        System.out.println("[NODE UDP]: Multicast sent type " + m.getType() );
 
     }
 
@@ -31,13 +31,15 @@ public class UDPInterface implements Runnable {
     @Override
     public void run() {
         try {
-            byte[] buf = new byte[1024];
-            DatagramPacket packet = new DatagramPacket(buf, buf.length);
-            System.out.println("[NS UDP]: waiting for messages on port: " +  node.getPort());
-            this.socket.receive(packet);
-            System.out.println("[NS UDP]: received a message");
-            Thread rq = new Thread( new RequestHandler(node, multicastAddress,packet));
-            rq.start();
+            while(true) {
+                byte[] buf = new byte[1024];
+                DatagramPacket packet = new DatagramPacket(buf, buf.length);
+                System.out.println("[NODE UDP]: waiting for messages on port " +  node.getPort());
+                this.socket.receive(packet);
+                Thread rq = new Thread( new RequestHandler(node, multicastAddress,packet));
+                rq.start();
+            }
+
 
         } catch (IOException e) {
             e.printStackTrace();

@@ -1,19 +1,26 @@
 package Messages;
 
+import Utils.HashFunction;
+
 public class Message {
     protected String type;
-    protected String sender;
+    protected int sender;
 
-    public Message(String sender) {
+    public Message(int sender) {
         this.sender = sender;
-
     }
+
+    public Message(String name) {
+        this.sender = HashFunction.hash(name);
+    }
+
+
 
     public String getType() {
         return type;
     }
 
-    public String getSender() {
+    public int getSender() {
         return sender;
     }
 
