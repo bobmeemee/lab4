@@ -41,19 +41,20 @@
     </dependencies>
 
     <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>exec-maven-plugin</artifactId>
-                    <version>1.4.0</version>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
                     <configuration>
-                        <mainClass>Main</mainClass>
+                        <archive>
+                            <manifest>
+                                <mainClass>Main</mainClass>
+                            </manifest>
+                        </archive>
                     </configuration>
-                </plugin>
+            </plugin>
 
-            </plugins>
-        </pluginManagement>
+        </plugins>
     </build>
 
 </project>
