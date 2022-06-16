@@ -88,18 +88,18 @@ public class NamingServer extends Thread{
     public String addNode(int nodeID, String IP) throws IOException {
         if (nodeMap.putIfAbsent(nodeID, IP) == null) {
             nodeMap.exportMap();
-            return "Added node with hash " + nodeID + " and IP" + IP + " to database\n";
+            return "Added node with hash " + nodeID + " and IP" + IP + " to database";
         } else {
-            return "Name with hash " + nodeID + " not available\n";
+            return "Name with hash " + nodeID + " not available";
         }
     }
 
     public String deleteNode(int nodeID) throws IOException {
         if(nodeMap.remove(nodeID) == null) {
-            return "Node with hash " + nodeID + " does not exist\n";
+            return "Node with hash " + nodeID + " does not exist";
         } else {
             nodeMap.exportMap();
-            return "Node with hash " + nodeID + " is deleted\n";
+            return "Node with hash " + nodeID + " is deleted";
         }
     }
 

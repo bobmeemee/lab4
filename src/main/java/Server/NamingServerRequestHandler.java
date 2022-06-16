@@ -45,7 +45,6 @@ public class NamingServerRequestHandler extends Thread {
                     String s = server.addNode(senderID, senderIP.toString());
                     System.out.println("[NS UDP]: " + s);
                     response = new NodeCountMessage(this.server.getServerID(), this.server.getNodeCount() - 1);
-                    System.out.println("[NS UDP]: sending amt of nodes in netw:" + response.getContent());
                     responseIsMulticast = false;
                 } catch (IOException e) {
                     e.printStackTrace();
