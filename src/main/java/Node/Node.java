@@ -2,6 +2,7 @@ package Node;
 
 
 import Messages.DiscoveryMessage;
+import Messages.LeavingNetworkMessage;
 import Messages.Message;
 import Utils.HashFunction;
 
@@ -32,6 +33,19 @@ public class Node {
 
         this.discovery();
 
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                System.out.println("[NODE] Shutdown hook");
+                try {
+                    shutdown();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+
     }
 
     public int getNodeID() {
@@ -51,6 +65,15 @@ public class Node {
         Message m = new DiscoveryMessage(this.nodeID);
         udpInterface.sendMulticast(m);
     }
+
+    public void shutdown() throws IOException {
+        Message m1 = new LeavingNetworkMessage(this.nodeID, this.nextID);
+        Message m2 = new LeavingNetworkMessage(this.nodeID, this.previousID);
+
+        udpInterface.sendMulticast(m1);
+        udpInterface.sendMulticast(m2);
+    }
+
 
     public static void main(String[] args) throws IOException {
         Node node = new Node(args[0]);
