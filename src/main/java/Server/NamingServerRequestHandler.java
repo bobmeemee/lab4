@@ -65,16 +65,15 @@ public class NamingServerRequestHandler extends Thread {
 
         if(responseIsMulticast) {
             try {
-                this.server.getUdpInterface().sendMulticast(response);
+                if(!Objects.equals(response.getType(), "message")) {
+                    this.server.getUdpInterface().sendMulticast(response);
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
         } else {
             try {
-                if (!Objects.equals(response.getType(), "message")) {
-                    this.server.getUdpInterface().sendUnicast(response,senderIP, receivedMessage.getPort());
-
-                }
+                this.server.getUdpInterface().sendUnicast(response, senderIP, receivedMessage.getPort());
             } catch (IOException e) {
                 e.printStackTrace();
             }
