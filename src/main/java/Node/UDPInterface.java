@@ -45,7 +45,7 @@ public class UDPInterface implements Runnable {
     public void run() {
         try {
             while(true) {
-                byte[] buf = new byte[1024];
+                byte[] buf = new byte[2047];
                 DatagramPacket packet = new DatagramPacket(buf, buf.length);
                 System.out.println("[NODE UDP]: waiting for messages on port " +  this.port);
                 this.socket.receive(packet);
