@@ -73,11 +73,14 @@ public class RequestHandler extends Thread {
             case "LeavingNetworkMessage":
                 LeavingNetworkMessage m = gson.fromJson(json, LeavingNetworkMessage.class);
 
-                if (senderID == this.node.getPreviousID()) {
+                if (senderID == this.node.getPreviousID())
+                {
                     node.setPreviousID(m.getPreviousID());
                 System.out.println("[NODE]: Node (previousID) " + senderID + " left the network\n" +
                         "new previous node: " + this.node.getPreviousID());
-                } else if(senderID == this.node.getNextID()) {
+                }
+                if(senderID == this.node.getNextID())
+                {
                     node.setNextID(m.getNextID());
                     System.out.println("[NODE]: Node (nextID) " + senderID + "left the network\n" +
                             "new next node: " + this.node.getNodeID());
