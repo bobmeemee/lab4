@@ -35,9 +35,6 @@ public class RequestHandler extends Thread {
 
         Message response = new Message(senderID);
         boolean sendUnicastResponse = false;
-        System.out.println("[NODE]: current next " + this.node.getNextID());
-        System.out.println("[NODE]: current previous " + this.node.getPreviousID());
-
 
         switch (message.getType()) {
             case "DiscoveryMessage":
@@ -47,17 +44,22 @@ public class RequestHandler extends Thread {
                     this.node.setPreviousID(senderID);
                     response = new InsertAsPreviousAndNextMessage(this.node.getNodeID());
                     sendUnicastResponse = true;
+                    System.out.println("[NODE]: new next " + this.node.getNextID());
+                    System.out.println("[NODE]: new previous " + this.node.getPreviousID());
                     // sender is new next
                 } else if(senderID < this.node.getNextID() && senderID > this.node.getNodeID() ) {
                     this.node.setNextID(senderID);
                     response = new InsertAsPreviousMessage(this.node.getNodeID());
                     sendUnicastResponse = true;
-
+                    System.out.println("[NODE]: new next " + this.node.getNextID());
+                    System.out.println("[NODE]: previous " + this.node.getPreviousID());
                     // sender is new prev
                 } else if(senderID > this.node.getPreviousID() && senderID < this.node.getNodeID() ) {
                     this.node.setPreviousID(senderID);
                     response = new InsertAsNextMessage(this.node.getNodeID());
                     sendUnicastResponse = true;
+                    System.out.println("[NODE]: next " + this.node.getNextID());
+                    System.out.println("[NODE]: new previous " + this.node.getPreviousID());
 
                 }
                 break;

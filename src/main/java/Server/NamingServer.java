@@ -12,8 +12,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-
-
 @RestController
 public class NamingServer extends Thread{
     private final CustomMap nodeMap;
@@ -110,6 +108,7 @@ public class NamingServer extends Thread{
     }
 
     public int getNodeCount() {
+        System.out.println("[NAMESERVER]: amount of nodes currently in network: " + nodeMap.size());
         return nodeMap.size();
     }
 
