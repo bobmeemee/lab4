@@ -47,18 +47,22 @@ public class RequestHandler extends Thread {
                     System.out.println("[NODE]: new next " + this.node.getNextID());
                     System.out.println("[NODE]: new previous " + this.node.getPreviousID());
                     // sender is new next
-                } else if(((senderID < this.node.getNextID()) && (senderID > this.node.getNodeID()))
-                        || (this.node.getNextID() == this.node.getPreviousID() && this.node.getPreviousID()<this.node.getNodeID())
-                        || (this.node.getNextID() < this.node.getNodeID() && senderID < this.node.getNextID())) {
+                } else if(((senderID < this.node.getNextID()) && (senderID > this.node.getNodeID())) // standard case
+                        || (this.node.getNextID() == this.node.getPreviousID() && this.node.getPreviousID()<this.node.getNodeID()) //two nodes in netw
+                        || (this.node.getNextID() < this.node.getNodeID() && senderID < this.node.getNextID()) // smaller than smallest
+                        || (this.node.getNextID() < this.node.getNodeID() && senderID > this.node.getNodeID())) // bigger than biggest
+                {
                     this.node.setNextID(senderID);
                     response = new InsertAsPreviousMessage(this.node.getNodeID());
                     sendUnicastResponse = true;
                     System.out.println("[NODE]: new next " + this.node.getNextID());
                     System.out.println("[NODE]: previous " + this.node.getPreviousID());
                     // sender is new prev
-                } else if((senderID > this.node.getPreviousID() && senderID < this.node.getNodeID())
-                        || (this.node.getNextID() == this.node.getPreviousID() && this.node.getNextID() > this.node.getNodeID())
-                        || (this.node.getPreviousID() > this.node.getNodeID()) && senderID < this.node.getNodeID()) {
+                } else if((senderID > this.node.getPreviousID() && senderID < this.node.getNodeID()) //normal
+                        || (this.node.getNextID() == this.node.getPreviousID() && this.node.getNextID() > this.node.getNodeID()) //two nodes case
+                        || (this.node.getPreviousID() > this.node.getNodeID() && senderID < this.node.getNodeID()) // smaller than smallest
+                        || (this.node.getPreviousID() > this.node.getNodeID() && senderID > this.node.getPreviousID())) //bigger than biggest
+                {
                     this.node.setPreviousID(senderID);
                     response = new InsertAsNextMessage(this.node.getNodeID());
                     sendUnicastResponse = true;
