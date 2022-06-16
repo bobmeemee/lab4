@@ -9,6 +9,7 @@ import com.google.gson.Gson;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.util.Objects;
 
 public class NamingServerRequestHandler extends Thread {
     private NamingServer server;
@@ -37,7 +38,7 @@ public class NamingServerRequestHandler extends Thread {
                     + senderIP + ":" + receivedMessage.getPort());
         }
 
-        Message response = new Message(server.getServerID());
+        Message response = null;
         boolean responseIsMulticast = true;
         switch(message.getType()) {
             case "DiscoveryMessage":
@@ -70,7 +71,10 @@ public class NamingServerRequestHandler extends Thread {
             }
         } else {
             try {
-                this.server.getUdpInterface().sendUnicast(response,senderIP, receivedMessage.getPort());
+                if (!Objects.equals(response.getType(), "")) {
+                    this.server.getUdpInterface().sendUnicast(response,senderIP, receivedMessage.getPort());
+
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
