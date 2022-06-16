@@ -71,7 +71,7 @@ public class NamingServerRequestHandler extends Thread {
             }
         } else {
             try {
-                if (!Objects.equals(response.getType(), "")) {
+                if (!Objects.equals(response.getType(), "message")) {
                     this.server.getUdpInterface().sendUnicast(response,senderIP, receivedMessage.getPort());
 
                 }

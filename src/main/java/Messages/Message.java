@@ -9,7 +9,7 @@ public class Message {
 
     public Message(int sender) {
         this.sender = sender;
-        this.type = "";
+        this.type = "message";
     }
 
     public Message(String name) {
