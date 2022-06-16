@@ -5,6 +5,7 @@ import Utils.HashFunction;
 public class Message {
     protected String type;
     protected int sender;
+    protected int content;
 
     public Message(int sender) {
         this.sender = sender;
@@ -26,6 +27,6 @@ public class Message {
 
 
     public int getContent() {
-        return 0;
+        return content;
     }
 }
