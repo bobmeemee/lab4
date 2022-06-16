@@ -1,15 +1,20 @@
 package Messages;
 
 public class LeavingNetworkMessage extends Message {
-
-    public LeavingNetworkMessage(int sender, int replacingNodeID) {
+    private final int previousID;
+    private final int nextID;
+    public LeavingNetworkMessage(int sender, int previousID, int nextID) {
         super(sender);
         super.type = "LeavingNetworkMessage";
-        super.content = replacingNodeID;
+        this.previousID = previousID;
+        this.nextID = nextID;
     }
 
-    @Override
-    public int getContent() {
-        return this.content;
+    public int getPreviousID() {
+        return previousID;
+    }
+
+    public int getNextID() {
+        return nextID;
     }
 }

@@ -33,17 +33,14 @@ public class Node {
 
         this.discovery();
 
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                System.out.println("[NODE] Shutdown hook");
-                try {
-                    shutdown();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            System.out.println("[NODE] Shutdown hook");
+            try {
+                shutdown();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        });
+        }));
 
 
     }
@@ -67,11 +64,8 @@ public class Node {
     }
 
     public void shutdown() throws IOException {
-        Message m1 = new LeavingNetworkMessage(this.nodeID, this.nextID);
-        Message m2 = new LeavingNetworkMessage(this.nodeID, this.previousID);
-
-        udpInterface.sendMulticast(m1);
-        udpInterface.sendMulticast(m2);
+        Message m = new LeavingNetworkMessage(this.nodeID, this.previousID, this.nextID);
+        udpInterface.sendMulticast(m);
     }
 
 
