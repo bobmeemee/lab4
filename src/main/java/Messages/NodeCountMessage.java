@@ -12,6 +12,6 @@ public class NodeCountMessage extends Message {
 
     @Override
     public int getContent() {
-        return nodeCount;
+        return this.nodeCount;
     }
 }

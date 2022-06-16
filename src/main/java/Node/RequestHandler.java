@@ -72,7 +72,7 @@ public class RequestHandler extends Thread {
                 break;
             case "NodeCountMessage":
                 System.out.println("[NODE UDP]: " + "currently " + message.getContent() + " other nodes in network");
-                if(message.getContent() < 1) {
+                if(message.getContent() == 0) {
                     this.node.setNextID(this.node.getNodeID());
                     this.node.setPreviousID(this.node.getNodeID());
                     System.out.println("[NODE]: Only node in network");
