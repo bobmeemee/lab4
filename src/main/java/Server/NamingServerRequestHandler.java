@@ -38,7 +38,7 @@ public class NamingServerRequestHandler extends Thread {
                     + senderIP + ":" + receivedMessage.getPort());
         }
 
-        Message response = null;
+        Message response = new Message(this.server.getServerID());
         boolean responseIsMulticast = true;
         switch(message.getType()) {
             case "DiscoveryMessage":
