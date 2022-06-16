@@ -56,7 +56,7 @@ public class RequestHandler extends Thread {
                     System.out.println("[NODE]: previous " + this.node.getPreviousID());
                     // sender is new prev
                 } else if(senderID > this.node.getPreviousID() && senderID < this.node.getNodeID()
-                        || (this.node.getNextID() == this.node.getPreviousID() && senderID < this.node.getNodeID())) {
+                        || (this.node.getNextID() == this.node.getPreviousID() && senderID > this.node.getNextID())) {
                     this.node.setPreviousID(senderID);
                     response = new InsertAsNextMessage(this.node.getNodeID());
                     sendUnicastResponse = true;
