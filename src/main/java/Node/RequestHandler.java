@@ -63,8 +63,6 @@ public class RequestHandler extends Thread {
                     System.out.println("[NODE]: previous " + this.node.getPreviousID());
                     // sender is new prev
                 }
-
-                }
                 break;
             case "LeavingNetworkMessage":
                 if(senderID == this.node.getPreviousID())
