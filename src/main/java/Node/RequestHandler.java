@@ -83,7 +83,7 @@ public class RequestHandler extends Thread {
                 {
                     node.setNextID(m.getNextID());
                     System.out.println("[NODE]: Node (nextID) " + senderID + "left the network\n" +
-                            "new next node: " + this.node.getNodeID());
+                            "new next node: " + this.node.getNextID());
                 }
                 break;
             case "NodeCountMessage":
