@@ -2,7 +2,8 @@ package Messages;
 
 public class NodeCountMessage extends Message {
 
-    private int nodeCount;
+    private final int nodeCount;
+
     public NodeCountMessage(int sender, int nodeCount) {
         super(sender);
         super.type = "NodeCountMessage";
