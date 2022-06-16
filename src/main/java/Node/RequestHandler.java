@@ -39,7 +39,7 @@ public class RequestHandler extends Thread {
         switch (message.getType()) {
             case "DiscoveryMessage":
                 // node was the only one in network
-                if(this.node.getNodeID() == this.node.getNextID() && this.node.getNextID() != -1) {
+                if (this.node.getNodeID() == this.node.getNextID() && this.node.getNextID() != -1) {
                     this.node.setNextID(senderID);
                     this.node.setPreviousID(senderID);
                     response = new InsertAsPreviousAndNextMessage(this.node.getNodeID());
@@ -47,8 +47,8 @@ public class RequestHandler extends Thread {
                     System.out.println("[NODE]: new next " + this.node.getNextID());
                     System.out.println("[NODE]: new previous " + this.node.getPreviousID());
                     // sender is new next
-                } else if(((senderID < this.node.getNextID()) && (senderID > this.node.getNodeID())) // standard case
-                        || (this.node.getNextID() == this.node.getPreviousID() && this.node.getPreviousID()<this.node.getNodeID()) //two nodes in netw
+                } else if (((senderID < this.node.getNextID()) && (senderID > this.node.getNodeID())) // standard case
+                        || (this.node.getNextID() == this.node.getPreviousID() && this.node.getPreviousID() < this.node.getNodeID()) //two nodes in netw
                         || (this.node.getNextID() < this.node.getNodeID() && senderID < this.node.getNextID()) // smaller than smallest
                         || (this.node.getNextID() < this.node.getNodeID() && senderID > this.node.getNodeID())) // bigger than biggest
                 {
@@ -58,7 +58,7 @@ public class RequestHandler extends Thread {
                     System.out.println("[NODE]: new next " + this.node.getNextID());
                     System.out.println("[NODE]: previous " + this.node.getPreviousID());
                     // sender is new prev
-                } else if((senderID > this.node.getPreviousID() && senderID < this.node.getNodeID()) //normal
+                } else if ((senderID > this.node.getPreviousID() && senderID < this.node.getNodeID()) //normal
                         || (this.node.getNextID() == this.node.getPreviousID() && this.node.getNextID() > this.node.getNodeID()) //two nodes case
                         || (this.node.getPreviousID() > this.node.getNodeID() && senderID < this.node.getNodeID()) // smaller than smallest
                         || (this.node.getPreviousID() > this.node.getNodeID() && senderID > this.node.getPreviousID())) //bigger than biggest
@@ -73,11 +73,11 @@ public class RequestHandler extends Thread {
             case "LeavingNetworkMessage":
                 LeavingNetworkMessage m = gson.fromJson(json, LeavingNetworkMessage.class);
 
-                if(senderID == this.node.getPreviousID())
+                if (senderID == this.node.getPreviousID()) {
                     node.setPreviousID(m.getPreviousID());
-                    System.out.println("[NODE]: Node (previousID) " + senderID + " left the network\n" +
-                            "new previous node: " + this.node.getPreviousID());
-                if(senderID == this.node.getNextID()  ) {
+                System.out.println("[NODE]: Node (previousID) " + senderID + " left the network\n" +
+                        "new previous node: " + this.node.getPreviousID());
+                } else if(senderID == this.node.getNextID()) {
                     node.setNextID(m.getNextID());
                     System.out.println("[NODE]: Node (nextID) " + senderID + "left the network\n" +
                             "new next node: " + this.node.getNodeID());
