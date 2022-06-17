@@ -16,14 +16,14 @@ import java.util.Set;
 public class NamingServer extends Thread{
     private final CustomMap nodeMap;
     private final HashMap<Integer, Integer> fileMap;
-    private HashMap<Integer, FailureWatcher> failureMap;
+    private HashMap<Integer, Thread> failureMap;
 
     private NamingServerUDPInterface udpInterface;
 
     public NamingServer()  {
         nodeMap = new CustomMap();
         fileMap = new HashMap<>();
-        failureMap = new HashMap<Integer, FailureWatcher>();
+        failureMap = new HashMap<>();
         try {
             this.udpInterface = new NamingServerUDPInterface(this);
             new Thread(this.udpInterface).start();
@@ -90,9 +90,10 @@ public class NamingServer extends Thread{
 
     public String addNode(int nodeID, InetAddress IP) throws IOException {
         if (nodeMap.putIfAbsent(nodeID, IP.toString()) == null) {
-            FailureWatcher f = new FailureWatcher(this, IP, nodeID);
+
+            Thread f = new Thread(new FailureWatcher(this, IP, nodeID));
             failureMap.put(nodeID, f);
-            f.run();
+            f.start();
             nodeMap.exportMap();
             return "Added node with hash " + nodeID + " and IP" + IP + " to database";
         } else {
@@ -104,7 +105,7 @@ public class NamingServer extends Thread{
         if(nodeMap.remove(nodeID) == null) {
             return "Node with hash " + nodeID + " does not exist";
         } else {
-            failureMap.get(nodeID).setShutdown(true);
+            failureMap.get(nodeID).interrupt();
             failureMap.remove(nodeID);
             nodeMap.exportMap();
             return "Node with hash " + nodeID + " is deleted";
