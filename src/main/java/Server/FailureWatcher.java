@@ -56,7 +56,11 @@ public class FailureWatcher extends Thread {
             try {
                 PingMessage ping = new PingMessage(server.getServerID());
                 server.getUdpInterface().sendUnicast(ping, address, 8001);
-                Thread.sleep(timeoutInterval);
+                try {
+                    Thread.sleep(timeoutInterval);
+                } catch (InterruptedException e) {
+                    return;
+                }
                 decrementTimeOutCounter();
                 if(timeOutCounter.get() < 3)
                 {
@@ -78,7 +82,7 @@ public class FailureWatcher extends Thread {
                     return;
                 }
 
-            } catch (InterruptedException | IOException e) {
+            } catch ( IOException e) {
                 e.printStackTrace();
             }
 
