@@ -33,14 +33,14 @@ public class Node {
 
         this.discovery();
 
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+  /*      Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             System.out.println("[NODE] Shutdown hook");
             try {
                 shutdown();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }));
+        }));*/
 
 
     }
