@@ -1,7 +1,6 @@
 package Node;
 
 import Messages.*;
-import Utils.HashFunction;
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -9,9 +8,9 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 
 public class RequestHandler extends Thread {
-    private Node node;
-    private InetAddress multicastAddress;
-    private DatagramPacket receivedMessage;
+    private final Node node;
+    private final InetAddress multicastAddress;
+    private final DatagramPacket receivedMessage;
 
     public RequestHandler(Node node, InetAddress multicastAddress,  DatagramPacket receivedMessage) {
         this.node = node;
@@ -48,7 +47,7 @@ public class RequestHandler extends Thread {
                     System.out.println("[NODE]: new previous " + this.node.getPreviousID());
                     // sender is new next
                 } else if (((senderID < this.node.getNextID()) && (senderID > this.node.getNodeID())) // standard case
-                        || (this.node.getNextID() == this.node.getPreviousID() && this.node.getPreviousID() < this.node.getNodeID()) //two nodes in netw
+                        || (this.node.getNextID() == this.node.getPreviousID() && this.node.getPreviousID() < this.node.getNodeID()) //two nodes in network
                         || (this.node.getNextID() < this.node.getNodeID() && senderID < this.node.getNextID()) // smaller than smallest
                         || (this.node.getNextID() < this.node.getNodeID() && senderID > this.node.getNodeID())) // bigger than biggest
                 {
@@ -110,6 +109,19 @@ public class RequestHandler extends Thread {
                 this.node.setPreviousID(senderID);
                 this.node.setNextID(senderID);
                 System.out.println("[NODE UDP]: New previous and next node ID: " + this.node.getPreviousID());
+
+            case "FailureMessage":
+                if(this.node.getPreviousID() == message.getContent()) {
+                    FailureMessage mF = gson.fromJson(json, FailureMessage.class);
+                    node.setPreviousID(mF.getFailedPrev());
+                }
+                if(this.node.getNextID() == message.getContent()) {
+                    FailureMessage mF = gson.fromJson(json, FailureMessage.class);
+                    node.setNextID(mF.getFailedNext());
+                }
+
+                break;
+
 
             default:
                 break;

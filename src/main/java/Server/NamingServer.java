@@ -2,10 +2,10 @@ package Server;
 
 import Utils.HashFunction;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.HashMap;
@@ -16,11 +16,14 @@ import java.util.Set;
 public class NamingServer extends Thread{
     private final CustomMap nodeMap;
     private final HashMap<Integer, Integer> fileMap;
+    private HashMap<Integer, FailureWatcher> failureMap;
+
     private NamingServerUDPInterface udpInterface;
 
     public NamingServer()  {
         nodeMap = new CustomMap();
         fileMap = new HashMap<Integer, Integer>();
+        failureMap = new HashMap<Integer, FailureWatcher>();
         try {
             this.udpInterface = new NamingServerUDPInterface(this);
             new Thread(this.udpInterface).start();
@@ -87,6 +90,9 @@ public class NamingServer extends Thread{
 
     public String addNode(int nodeID, String IP) throws IOException {
         if (nodeMap.putIfAbsent(nodeID, IP) == null) {
+            FailureWatcher f = new FailureWatcher(this, InetAddress.getByName(IP), nodeID);
+            failureMap.put(nodeID, f);
+            f.run();
             nodeMap.exportMap();
             return "Added node with hash " + nodeID + " and IP" + IP + " to database";
         } else {
@@ -98,10 +104,29 @@ public class NamingServer extends Thread{
         if(nodeMap.remove(nodeID) == null) {
             return "Node with hash " + nodeID + " does not exist";
         } else {
+            failureMap.get(nodeID).setShutdown(true);
+            failureMap.remove(nodeID);
             nodeMap.exportMap();
             return "Node with hash " + nodeID + " is deleted";
         }
     }
+
+    public int getLowerNodeID(int nodeID) throws IOException {
+        if(nodeMap.lowerKey(nodeID) ==null) {
+            return nodeMap.lastKey();
+        } else {
+            return nodeMap.lowerKey(nodeID);
+        }
+    }
+
+    public int getUpperNodeID(int nodeID) throws IOException {
+        if(nodeMap.higherKey(nodeID) == null ) {
+            return nodeMap.firstKey();
+        } else {
+            return nodeMap.higherKey(nodeID);
+        }
+    }
+
 
     public int getServerID() {
         return 0;
