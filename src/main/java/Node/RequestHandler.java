@@ -126,6 +126,12 @@ public class RequestHandler extends Thread {
 
                 break;
 
+            case "PingMessage":
+                response = new PingMessage(this.node.getNodeID());
+                sendUnicastResponse = true;
+                System.out.println("[NODE UDP]: Ping received");
+                break;
+
 
             default:
                 break;

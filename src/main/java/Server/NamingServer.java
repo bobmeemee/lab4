@@ -16,7 +16,7 @@ import java.util.Set;
 public class NamingServer extends Thread{
     private final CustomMap nodeMap;
     private final HashMap<Integer, Integer> fileMap;
-    private HashMap<Integer, Thread> failureMap;
+    private HashMap<Integer, FailureWatcher> failureMap;
 
     private NamingServerUDPInterface udpInterface;
 
@@ -91,7 +91,7 @@ public class NamingServer extends Thread{
     public String addNode(int nodeID, InetAddress IP) throws IOException {
         if (nodeMap.putIfAbsent(nodeID, IP.toString()) == null) {
 
-            Thread f = new Thread(new FailureWatcher(this, IP, nodeID));
+            FailureWatcher f = new FailureWatcher(this, IP, nodeID);
             failureMap.put(nodeID, f);
             f.start();
             nodeMap.exportMap();
@@ -141,6 +141,11 @@ public class NamingServer extends Thread{
     public NamingServerUDPInterface getUdpInterface() {
         return udpInterface;
     }
+
+    public FailureWatcher getNodeFailureWatcher(int nodeID) {
+        return this.failureMap.get(nodeID);
+    }
+
 
     public static void main(String[] args) {
         System.out.println("[NAMINGSERVER]: Starting...");

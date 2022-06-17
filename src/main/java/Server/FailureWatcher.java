@@ -2,44 +2,86 @@ package Server;
 
 import Messages.FailureMessage;
 import Messages.Message;
+import Messages.PingMessage;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class FailureWatcher extends Thread {
 
     private final InetAddress address;
     private final int nodeID;
     private final NamingServer server;
+    public AtomicInteger timeOutCounter;
+    public final int timeoutInterval = 2000;
 
-    public FailureWatcher(NamingServer server, InetAddress address, int nodeID) {
-        this.address = address;
+    public FailureWatcher(NamingServer server, InetAddress nodeAddress, int nodeID) {
+        this.address = nodeAddress;
         this.nodeID = nodeID;
         this.server = server;
+        this.timeOutCounter = new AtomicInteger(3);
     }
+
+    public int getTimeOutCounter() {
+        return timeOutCounter.get();
+    }
+
+
+    public void incrementTimeOutCounter() {
+        while (true) {
+            int existingValue = getTimeOutCounter();
+            int newValue = existingValue + 1;
+            if(timeOutCounter.compareAndSet(existingValue, newValue)) {
+                return;
+            }
+        }
+    }
+
+    public void decrementTimeOutCounter() {
+        while (true) {
+            int existingValue = getTimeOutCounter();
+            int newValue = existingValue - 1;
+            if(timeOutCounter.compareAndSet(existingValue, newValue)) {
+                return;
+            }
+        }
+    }
+
 
     @Override
     public void run() {
         System.out.println("[NS UDP]: started FailureWatcher for node " + nodeID);
         while (true) {
             try {
-                if(!address.isReachable(5000)) {
+                PingMessage ping = new PingMessage(server.getServerID());
+                server.getUdpInterface().sendUnicast(ping, address, 8001);
+                Thread.sleep(timeoutInterval);
+                decrementTimeOutCounter();
+                if(timeOutCounter.get() < 3)
+                {
+                    System.out.println("[NS FAIL]: Node " + nodeID + " unreachable for " + timeoutInterval* (3-timeOutCounter.get())
+                    + "ms");
+
+                }
+                if(timeOutCounter.get() == 0) {
 
                     int belowFailed = server.getLowerNodeID(nodeID);
                     int aboveFailed = server.getUpperNodeID(nodeID);
-                    FailureMessage m = new FailureMessage(server.getServerID(), nodeID, belowFailed, aboveFailed);
+                    FailureMessage mFailure = new FailureMessage(server.getServerID(), nodeID, belowFailed, aboveFailed);
 
-                    server.getUdpInterface().sendMulticast(m);
+                    server.getUdpInterface().sendMulticast(mFailure);
 
                     server.deleteNode(nodeID);
-                    System.out.println("[NAMINGSERVER]: Node " + nodeID + " failed");
+                    System.out.println("[NS FAIL]: Node " + nodeID + " failed");
                     return;
                 }
-            } catch (IOException e) {
+
+            } catch (InterruptedException | IOException e) {
                 e.printStackTrace();
             }
-        }
 
+        }
 
     }
 

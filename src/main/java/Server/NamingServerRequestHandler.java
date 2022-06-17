@@ -61,6 +61,11 @@ public class NamingServerRequestHandler extends Thread {
                 }
             default:
                 break;
+
+            case "PingMessage":
+                this.server.getNodeFailureWatcher(senderID).incrementTimeOutCounter();
+
+                break;
         }
 
         if(responseIsMulticast) {
