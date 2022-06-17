@@ -22,7 +22,7 @@ public class NamingServer extends Thread{
 
     public NamingServer()  {
         nodeMap = new CustomMap();
-        fileMap = new HashMap<Integer, Integer>();
+        fileMap = new HashMap<>();
         failureMap = new HashMap<Integer, FailureWatcher>();
         try {
             this.udpInterface = new NamingServerUDPInterface(this);
@@ -80,7 +80,7 @@ public class NamingServer extends Thread{
 
             send = "{\"Node status\":\"node exists\"," + "\"Node hash\":" + nodeID + "," +
                     "\"Nodes in network\":" + nodeMap.size() +
-                    "\"All nodes\":\"" + nodes.toString() + "\"}";
+                    "\"All nodes\":\"" + nodes + "\"}";
         }
         else{
             send = "{\"Node does not exist\"}";
@@ -88,9 +88,9 @@ public class NamingServer extends Thread{
         return send;
     }
 
-    public String addNode(int nodeID, String IP) throws IOException {
-        if (nodeMap.putIfAbsent(nodeID, IP) == null) {
-            FailureWatcher f = new FailureWatcher(this, InetAddress.getByName(IP), nodeID);
+    public String addNode(int nodeID, InetAddress IP) throws IOException {
+        if (nodeMap.putIfAbsent(nodeID, IP.toString()) == null) {
+            FailureWatcher f = new FailureWatcher(this, IP, nodeID);
             failureMap.put(nodeID, f);
             f.run();
             nodeMap.exportMap();

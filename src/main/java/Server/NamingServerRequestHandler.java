@@ -43,7 +43,7 @@ public class NamingServerRequestHandler extends Thread {
         switch(message.getType()) {
             case "DiscoveryMessage":
                 try {
-                    String s = server.addNode(senderID, senderIP.toString());
+                    String s = server.addNode(senderID, senderIP);
                     System.out.println("[NS UDP]: " + s);
                     response = new NodeCountMessage(this.server.getServerID(), this.server.getNodeCount() - 1);
                     responseIsMulticast = false;

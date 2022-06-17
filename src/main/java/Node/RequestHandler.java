@@ -114,10 +114,14 @@ public class RequestHandler extends Thread {
                 if(this.node.getPreviousID() == message.getContent()) {
                     FailureMessage mF = gson.fromJson(json, FailureMessage.class);
                     node.setPreviousID(mF.getFailedPrev());
+                    System.out.println("[NODE UDP]: Previous node " + message.getContent() + " failed \n" +
+                            "new previous node: " + this.node.getPreviousID());
                 }
                 if(this.node.getNextID() == message.getContent()) {
                     FailureMessage mF = gson.fromJson(json, FailureMessage.class);
                     node.setNextID(mF.getFailedNext());
+                    System.out.println("[NODE UDP]: Next node " + message.getContent() + " failed \n" +
+                            "new next node: " + this.node.getNextID());
                 }
 
                 break;

@@ -25,6 +25,7 @@ public class FailureWatcher implements Runnable {
 
     @Override
     public void run() {
+        System.out.println("[NS UDP]: started FailureWatcher for node " + nodeID);
         while (!shutdown) {
             try {
                 if(!address.isReachable(5000)) {
