@@ -16,6 +16,7 @@ public class Node {
     private int nextID;
     private int previousID;
     private UDPInterface udpInterface;
+    public boolean hasFailed = false;
 
     public Node(String name) throws IOException {
         this.name = name;
@@ -28,6 +29,7 @@ public class Node {
             new Thread(this.udpInterface).start();
         } catch (Exception e) {
             System.err.println("[NS] " + e);
+            hasFailed = true;
         }
 
 

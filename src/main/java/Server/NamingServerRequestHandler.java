@@ -33,7 +33,7 @@ public class NamingServerRequestHandler extends Thread {
 
         if(senderID == this.server.getServerID()) {
             return;
-        } else {
+        } else if (!Objects.equals(message.getType(), "PingMessage")){
             System.out.println("[NS UDP]: received a " + message.getType() + " from " + senderID + " with address "
                     + senderIP + ":" + receivedMessage.getPort());
         }

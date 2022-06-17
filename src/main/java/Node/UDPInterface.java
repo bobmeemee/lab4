@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.net.*;
+import java.util.Objects;
 
 public class UDPInterface implements Runnable {
     private final Node node;
@@ -36,18 +37,20 @@ public class UDPInterface implements Runnable {
         byte[] buf = json.getBytes();
         DatagramPacket packet = new DatagramPacket(buf, buf.length, destinationAddress, destinationPort);
         this.socket.send(packet);
-        System.out.println("[NODE UDP]: Unicast sent to " + destinationAddress.toString() +":" + destinationPort
-                + " type " + m.getType() );
+        if(!Objects.equals(m.getType(), "PingMessage")) {
+            System.out.println("[NODE UDP]: Unicast sent to " + destinationAddress.toString() +":" + destinationPort
+                    + " type " + m.getType() );
+        }
     }
 
 
     @Override
     public void run() {
+        System.out.println("[NODE UDP]: waiting for messages on port " +  this.port);
         try {
             while(true) {
                 byte[] buf = new byte[2047];
                 DatagramPacket packet = new DatagramPacket(buf, buf.length);
-                System.out.println("[NODE UDP]: waiting for messages on port " +  this.port);
                 this.socket.receive(packet);
                 Thread rq = new Thread( new RequestHandler(node, multicastAddress,packet));
                 rq.start();

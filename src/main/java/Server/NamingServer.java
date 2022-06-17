@@ -112,6 +112,16 @@ public class NamingServer extends Thread{
         }
     }
 
+    public String deleteFailedNode(int nodeID) throws IOException {
+        if(nodeMap.remove(nodeID) == null) {
+            return " [NAMINGSERVER] Node with hash " + nodeID + " does not exist";
+        } else {
+            failureMap.remove(nodeID);
+            nodeMap.exportMap();
+            return "[NAMINGSERVER] Node with hash " + nodeID + " is deleted";
+        }
+    }
+
     public int getLowerNodeID(int nodeID) throws IOException {
         if(nodeMap.lowerKey(nodeID) ==null) {
             return nodeMap.lastKey();

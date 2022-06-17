@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.net.*;
+import java.util.Objects;
 
 public class NamingServerUDPInterface implements Runnable{
     private final NamingServer server;
@@ -32,8 +33,11 @@ public class NamingServerUDPInterface implements Runnable{
         byte[] buf = json.getBytes();
         DatagramPacket packet = new DatagramPacket(buf, buf.length, destinationAddress, destinationPort);
         this.socket.send(packet);
-        System.out.println("[NS UDP]: Unicast sent to " + destinationAddress.toString() +":" + destinationPort
-                + " type " + m.getType() );
+        if(!Objects.equals(m.getType(), "PingMessage")) {
+            System.out.println("[NS UDP]: Unicast sent to " + destinationAddress.toString() +":" + destinationPort
+                    + " type " + m.getType() );
+        }
+
     }
 
 

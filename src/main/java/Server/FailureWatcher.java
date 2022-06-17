@@ -72,8 +72,9 @@ public class FailureWatcher extends Thread {
 
                     server.getUdpInterface().sendMulticast(mFailure);
 
-                    server.deleteNode(nodeID);
-                    System.out.println("[NS FAIL]: Node " + nodeID + " failed");
+                    System.out.println("[NS FAIL]: Node " + nodeID + " failed \n");
+                    String s = server.deleteFailedNode(nodeID);
+                    System.out.println(s);
                     return;
                 }
 

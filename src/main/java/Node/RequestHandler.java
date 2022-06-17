@@ -6,6 +6,7 @@ import com.google.gson.Gson;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.util.Objects;
 
 public class RequestHandler extends Thread {
     private final Node node;
@@ -27,7 +28,7 @@ public class RequestHandler extends Thread {
 
         if(senderID == this.node.getNodeID()) {
             return;
-        } else {
+        } else if(!Objects.equals(message.getType(),"PingMessage")){
             System.out.println("[NODE UDP]: received a " + message.getType() + " from " + senderID + " with address "
                     + senderIP + ":" + receivedMessage.getPort());
         }
@@ -127,9 +128,11 @@ public class RequestHandler extends Thread {
                 break;
 
             case "PingMessage":
-                response = new PingMessage(this.node.getNodeID());
-                sendUnicastResponse = true;
-                System.out.println("[NODE UDP]: Ping received");
+                if(!node.hasFailed) {
+                    response = new PingMessage(this.node.getNodeID());
+                    sendUnicastResponse = true;
+                }
+
                 break;
 
 
@@ -141,6 +144,7 @@ public class RequestHandler extends Thread {
             try {
                 this.node.getUdpInterface().sendUnicast(response, senderIP, receivedMessage.getPort());
             } catch (IOException e) {
+                node.hasFailed = true;
                 e.printStackTrace();
             }
         }
